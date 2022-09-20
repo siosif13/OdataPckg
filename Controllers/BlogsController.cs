@@ -27,7 +27,7 @@ namespace OdataPckg.Controllers
             return Ok(queryOptions.ApplyTo(items.AsQueryable()));
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         [NonAction]
         public ActionResult<BlogDto> GetById(int id)
         {
