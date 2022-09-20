@@ -1,10 +1,10 @@
-﻿using OdataPckg.DAL;
+﻿using OdataPckg.DTO;
 
 namespace OdataPckg.Services
 {
     public interface IBlogService
     {
-        IEnumerable<Blog> Get();
-        Blog? GetById(int id);
+        IEnumerable<BlogDto> Get();
+        BlogDto? GetById(int id);
     }
 }

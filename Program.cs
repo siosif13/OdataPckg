@@ -1,8 +1,11 @@
+using AutoMapper;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using OdataPckg.DAL;
+using OdataPckg.DAL.Entities;
+using OdataPckg.Mapper;
 using OdataPckg.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +46,21 @@ builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddDbContext<BloggingContext>(
     options => options.UseSqlServer(
         $"Data Source=localhost;Database=BlogTest;Persist Security Info=True;User ID=sa;Password=mOrc00vi!@#$"));
+
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new MapperProfile());
+});
+
+//mapper
+builder.Services.AddSingleton(
+    new MapperConfiguration(cfg =>
+    {
+        cfg.AddProfile(new MapperProfile());
+    })
+    .CreateMapper()
+);
+
 
 var app = builder.Build();
 

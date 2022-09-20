@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using OdataPckg.DAL;
+using OdataPckg.DTO;
 using OdataPckg.Services;
 
 namespace OdataPckg.Controllers
@@ -13,39 +12,32 @@ namespace OdataPckg.Controllers
     public class BlogsController : ODataController
     {
         private readonly IBlogService blogService;
-        private readonly BloggingContext context;
 
-        public BlogsController(IBlogService blogService, BloggingContext context)
+        public BlogsController(IBlogService blogService)
         {
             this.blogService = blogService;
-            this.context = context;
         }
 
         [HttpGet]
         [EnableQuery]
-        public ActionResult<IEnumerable<Blog>> Get()
+        public ActionResult<IEnumerable<BlogDto>> Get()
         {
-            return Ok(context.Set<Blog>());
+            var items = blogService.Get();
+            return Ok(items);
         }
 
         [HttpGet("/{id}")]
         [NonAction]
-        public ActionResult<Blog> GetById(int id)
+        public ActionResult<BlogDto> GetById(int id)
         {
             var blog = blogService.GetById(id);
             return Ok(blog);
         }
 
-        [HttpGet("blabla")]
-        public ActionResult<IEnumerable<Blog>> Bla()
-        {
-            return Ok(context.Set<Blog>());
-        }
-
-        [HttpPatch]
-        public ActionResult Patch (Delta<Blog> delta)
-        {
-            return Ok();
-        }
+        //[HttpPatch]
+        //public ActionResult Patch (Delta<Blog> delta)
+        //{
+        //    return Ok();
+        //}
     }
 }

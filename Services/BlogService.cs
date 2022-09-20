@@ -1,25 +1,34 @@
-﻿using OdataPckg.DAL;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using OdataPckg.DAL;
+using OdataPckg.DAL.Entities;
+using OdataPckg.DTO;
 
 namespace OdataPckg.Services
 {
     public class BlogService : IBlogService
     {
         private readonly BloggingContext context;
+        private readonly IMapper mapper;
+        private readonly DbSet<Blog> blogs;
 
-        public BlogService(BloggingContext context)
+        public BlogService(BloggingContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
+            blogs = context.Set<Blog>();
         }
 
-        public IEnumerable<Blog> Get()
+        IEnumerable<BlogDto> IBlogService.Get()
         {
-            var items = context.Set<Blog>().ToList();
-            return items;
+            var items = blogs.ToList();
+            return mapper.Map<IEnumerable<BlogDto>>(items);
         }
 
-        public Blog? GetById(int id)
+        BlogDto? IBlogService.GetById(int id)
         {
-            return context.Set<Blog>().FirstOrDefault(p => p.Id == id);
+            var item = blogs.FirstOrDefault(b => b.Id == id);
+            return mapper.Map<BlogDto>(item);
         }
     }
 }

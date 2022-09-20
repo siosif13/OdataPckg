@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:DataServices>
+        <Schema Namespace="OdataPckg.DAL.Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityType Name="Blog">
+                <Key>
+                    <PropertyRef Name="Id" />
+                </Key>
+                <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+                <Property Name="Url" Type="Edm.String" Nullable="false" />
+                <NavigationProperty Name="Posts" Type="Collection(OdataPckg.DAL.Entities.Post)" />
+            </EntityType>
+            <EntityType Name="Post">
+                <Key>
+                    <PropertyRef Name="Id" />
+                </Key>
+                <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+                <Property Name="Title" Type="Edm.String" Nullable="false" />
+                <Property Name="Content" Type="Edm.String" Nullable="false" />
+                <Property Name="BlogId" Type="Edm.Int32" Nullable="false" />
+                <NavigationProperty Name="Blog" Type="OdataPckg.DAL.Entities.Blog" Nullable="false">
+                    <ReferentialConstraint Property="BlogId" ReferencedProperty="Id" />
+                </NavigationProperty>
+            </EntityType>
+        </Schema>
+        <Schema Namespace="Default" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="Container">
+                <EntitySet Name="Blogs" EntityType="OdataPckg.DAL.Entities.Blog">
+                    <NavigationPropertyBinding Path="Posts" Target="Posts" />
+                </EntitySet>
+                <EntitySet Name="Posts" EntityType="OdataPckg.DAL.Entities.Post">
+                    <NavigationPropertyBinding Path="Blog" Target="Blogs" />
+                </EntitySet>
+            </EntityContainer>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
