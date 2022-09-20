@@ -19,11 +19,12 @@ namespace OdataPckg.Controllers
         }
 
         [HttpGet]
-        [EnableQuery]
-        public ActionResult<IEnumerable<BlogDto>> Get()
+        //[EnableQuery]
+        public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
             var items = blogService.Get();
-            return Ok(items);
+
+            return Ok(queryOptions.ApplyTo(items.AsQueryable()));
         }
 
         [HttpGet("/{id}")]

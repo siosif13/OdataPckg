@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using OdataPckg.DAL;
-using OdataPckg.DAL.Entities;
+using OdataPckg.DTO;
 using OdataPckg.Mapper;
 using OdataPckg.Services;
 
@@ -19,8 +19,7 @@ builder.Services.AddControllers().AddOData(options =>
         .SkipToken()
         .SetMaxTop(null)
         .Count()
-        .Select()
-        .Expand()
+        //.Select().Expand() --> not supported with odataQueryOptions
         .AddRouteComponents(GetEdmModel())
         );
 
@@ -28,9 +27,9 @@ IEdmModel GetEdmModel()
 {
     var odataBuilder = new ODataConventionModelBuilder();
 
-    odataBuilder.EntitySet<Blog>("Blogs");
+    odataBuilder.EntitySet<BlogDto>("Blogs");
 
-    odataBuilder.EntitySet<Post>("Posts");
+    odataBuilder.EntitySet<PostDto>("Posts");
 
     return odataBuilder.GetEdmModel();
 }
