@@ -1,8 +1,8 @@
 ﻿namespace OdataPckg.DAL
 {
     using Microsoft.EntityFrameworkCore;
+    using OdataPckg.DAL.Entities;
     using System;
-    using System.Collections.Generic;
 
     public class BloggingContext : DbContext
     {
@@ -11,33 +11,11 @@
 
         public string DbPath { get; }
 
-        public BloggingContext()
+        public BloggingContext(DbContextOptions options) : base(options)
         {
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
             DbPath = System.IO.Path.Join(path, "blogging.db");
         }
-        
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlServer($"Data Source=localhost;Database=BlogTest;Persist Security Info=True;User ID=sa;Password=mOrc00vi!@#$");
-
-    }
-
-    public class Blog
-    {
-        public int BlogId { get; set; }
-        public string Url { get; set; }
-
-        public List<Post> Posts { get; } = new();
-    }
-
-    public class Post
-    {
-        public int PostId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-
-        public int BlogId { get; set; }
-        public Blog Blog { get; set; }
     }
 }
