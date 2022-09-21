@@ -1,7 +1,8 @@
-﻿using OdataPckg.DAL;
+﻿using Microsoft.OData.ModelBuilder;
 
 namespace OdataPckg.DTO
 {
+    [AutoExpand]
     public class BlogDto
     {
         public int Id { get; set; }

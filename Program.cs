@@ -16,44 +16,62 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddOData(options => 
     options
-        .Filter()
-        .OrderBy()
-        .SkipToken()
-        .SetMaxTop(null)
-        .Count()
+        //.Filter()
+        //.OrderBy()
+        //.SkipToken()
+        //.SetMaxTop(null)
+        //.Count()              ===> Pointless if not using [EnableQuery], validation should be done manually by creating a validator
+
+
         //.Select().Expand() --> not supported with odataQueryOptions
         .AddRouteComponents(GetEdmModel())
         );
 
+//IEdmModel GetEdmModel()
+//{
+//    var builder = new ODataConventionModelBuilder();
+
+//    builder.EntitySet<BlogDto>("Blogs");
+
+//    builder.EntitySet<PostDto>("Posts");
+
+//    return builder.GetEdmModel();
+//}
 IEdmModel GetEdmModel()
 {
-    var odataBuilder = new ODataConventionModelBuilder();
+    var builder = new ODataModelBuilder();
 
-https://learn.microsoft.com/en-us/odata/webapi/model-builder-untyped build edm model explicitly
+    //builder.EntitySet<BlogDto>("Blogs");
 
+    //builder.EntitySet<PostDto>("Posts");
 
-    //EdmEntityType customer = new EdmEntityType("WebApiDocNS", "Customer");
-    //customer.AddKeys(customer.AddStructuralProperty("CustomerId", EdmPrimitiveTypeKind.Int32));
-    //customer.AddStructuralProperty("Location", new EdmComplexTypeReference(address, isNullable: true));
-    //model.AddElement(customer);
+    //var post = builder.ComplexType<PostDto>();
+    //post.Property(p => p.Id);
+    //post.Property(p => p.Title);
+    //post.Property(p => p.Content);
 
-    //EdmEntityType order = new EdmEntityType("WebApiDocNS", "Order");
-    //order.AddKeys(order.AddStructuralProperty("OrderId", EdmPrimitiveTypeKind.Int32));
-    //order.AddStructuralProperty("Token", EdmPrimitiveTypeKind.Guid);
-    //model.AddElement(order);
+    //var blog = builder.ComplexType<BlogDto>();
+    //blog.Property(p => p.Id);
+    //blog.Property(p => p.Url);
+    //blog.HasMany(p => p.Posts).AutomaticallyExpand(false);
 
-    //EdmEntityType blog = new EdmEntityType("dto", "Blog");
-    //blog.AddKeys(blog.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32));
-    //blog.AddStructuralProperty("Url", EdmPrimitiveTypeKind.String);
-    //blog.AddStructuralProperty("Posts", new EdmComplexTypeReference(IEnumerable, false));
-    //blog.AddStructuralProperty("Posts", EdmPrimitiveTypeKind.Lis)
+    var post = builder.EntityType<PostDto>();
+    post.HasKey(p => p.Id);
+    post.Property(p => p.Title);
+    post.Property(p => p.Content);
 
+    var blog = builder.EntityType<BlogDto>();
+    blog.HasKey(p => p.Id);
+    blog.Property(p => p.Url);
+    blog.HasMany(p => p.Posts);
+        //.AutomaticallyExpand(false);
 
-    odataBuilder.EntitySet<BlogDto>("Blogs");
+    //var test = blog.HasMany(p => p.Posts).HasAutoExpand();
 
-    odataBuilder.EntitySet<PostDto>("Posts");
+    builder.EntitySet<BlogDto>("Blogs");
+    builder.EntitySet<PostDto>("Posts");
 
-    return odataBuilder.GetEdmModel();
+    return builder.GetEdmModel();
 }
 
 

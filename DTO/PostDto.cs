@@ -1,7 +1,9 @@
-﻿using OdataPckg.DAL;
+﻿using Microsoft.OData.ModelBuilder;
+using OdataPckg.DAL;
 
 namespace OdataPckg.DTO
 {
+    [AutoExpand]
     public class PostDto
     {
         public int Id { get; set; }
