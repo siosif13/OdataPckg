@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using OdataPckg.DTO;
@@ -6,7 +7,7 @@ using OdataPckg.Services;
 
 namespace OdataPckg.Controllers
 {
-    //[ApiController]           --> not activating it removes esential api verifications, activating it duplicates endpoints and conflicts with odata
+    //[ApiController]           /*--> not activating it removes esential api verifications, activating it duplicates endpoints and conflicts with odata*/
     //[Route("[controller]")]
     //[ODataRouteComponent("Blogs")]
     public class BlogsController : ODataController
@@ -22,13 +23,14 @@ namespace OdataPckg.Controllers
         //[EnableQuery]
         public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
-            var items = blogService.Get();
+            // should we validate query options??
+            var items = blogService.Get(queryOptions);
 
-            return Ok(queryOptions.ApplyTo(items.AsQueryable()));
+            return Ok(items);
         }
 
         [HttpGet("{id}")]
-        [NonAction]
+        //[NonAction]
         public ActionResult<BlogDto> GetById(int id)
         {
             var blog = blogService.GetById(id);
@@ -36,7 +38,7 @@ namespace OdataPckg.Controllers
         }
 
         //[HttpPatch]
-        //public ActionResult Patch (Delta<Blog> delta)
+        //public ActionResult Patch(Delta<BlogDto> delta)
         //{
         //    return Ok();
         //}

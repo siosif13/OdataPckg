@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
@@ -56,6 +57,7 @@ builder.Services.AddSingleton(
     new MapperConfiguration(cfg =>
     {
         cfg.AddProfile(new MapperProfile());
+        cfg.AddExpressionMapping();             // ---> used for expression mapping
     })
     .CreateMapper()
 );

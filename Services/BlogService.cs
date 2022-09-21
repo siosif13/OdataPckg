@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using OdataPckg.DAL;
 using OdataPckg.DAL.Entities;
 using OdataPckg.DTO;
+using OdataPckg.Extensions;
+using System.Linq.Expressions;
+using System.Xml.Linq;
 
 namespace OdataPckg.Services
 {
@@ -19,9 +23,12 @@ namespace OdataPckg.Services
             blogs = context.Set<Blog>();
         }
 
-        IEnumerable<BlogDto> IBlogService.Get()
+        public IEnumerable<BlogDto> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
-            var items = blogs.ToList();
+            var expression = TranslateExpression<BlogDto, Blog>(queryOptions);
+
+            var items = blogs.Where(expression).ToList();
+
             return mapper.Map<IEnumerable<BlogDto>>(items);
         }
 
@@ -29,6 +36,14 @@ namespace OdataPckg.Services
         {
             var item = blogs.FirstOrDefault(b => b.Id == id);
             return mapper.Map<BlogDto>(item);
+        }
+
+        private Expression<Func<TEntity, bool>> TranslateExpression<TDto, TEntity>(ODataQueryOptions<TDto> queryOptions)
+        {
+            var filter = queryOptions.GetFilter();
+
+            var translatedExpression = mapper.Map<Expression<Func<TDto, bool>>, Expression<Func<TEntity, bool>>>(filter);
+            return translatedExpression;
         }
     }
 }
