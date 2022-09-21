@@ -29,6 +29,16 @@ namespace OdataPckg.Controllers
             return Ok(items);
         }
 
+        //[HttpGet]
+        ////[EnableQuery]
+        //public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
+        //{
+        //    // should we validate query options??
+        //    var items = blogService.GetTakeSkip(queryOptions);
+
+        //    return Ok(items);
+        //}
+
         [HttpGet("{id}")]
         //[NonAction]
         public ActionResult<BlogDto> GetById(int id)

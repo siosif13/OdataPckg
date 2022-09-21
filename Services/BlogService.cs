@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using OdataPckg.DAL;
@@ -25,12 +27,36 @@ namespace OdataPckg.Services
 
         public IEnumerable<BlogDto> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
-            var expression = TranslateExpression<BlogDto, Blog>(queryOptions);
+            var initialQ = context.Set<Blog>().Include(p => p.Posts);
+            // Take & Skip are not called in the database
 
-            var items = blogs.Where(expression).ToList();
+            var query = TranslateQuery(initialQ, queryOptions);
 
-            return mapper.Map<IEnumerable<BlogDto>>(items);
+            var items = mapper.Map<IEnumerable<BlogDto>>(query.ToList());
+            //queryOptions.ApplyTo(items);
+
+            return items;
         }
+
+
+        public IEnumerable<BlogDto> GetTakeSkip(ODataQueryOptions<BlogDto> queryOptions)
+        {
+            //var expression = TranslateExpression<BlogDto, Blog>(queryOptions);
+
+            //var items = blogs.Where(expression).ToList();
+
+            //var items = blogs.ToList().AsQueryable();
+
+
+            //return mapper.Map<IEnumerable<BlogDto>>(filteredItems.ToList());
+
+            var items = mapper.Map<IEnumerable<BlogDto>>(blogs.ToList()).AsQueryable();
+
+            var filteredItems = queryOptions.ApplyTo(items) as IQueryable<BlogDto>;
+
+            return filteredItems.ToList();
+        }
+
 
         BlogDto? IBlogService.GetById(int id)
         {
@@ -38,12 +64,30 @@ namespace OdataPckg.Services
             return mapper.Map<BlogDto>(item);
         }
 
-        private Expression<Func<TEntity, bool>> TranslateExpression<TDto, TEntity>(ODataQueryOptions<TDto> queryOptions)
+        private IQueryable<TEntity> TranslateQuery<TDto, TEntity>(IQueryable<TEntity> query, ODataQueryOptions<TDto> queryOptions)
         {
-            var filter = queryOptions.GetFilter();
+            //Todo move this to an extension of IQueryable?
 
-            var translatedExpression = mapper.Map<Expression<Func<TDto, bool>>, Expression<Func<TEntity, bool>>>(filter);
-            return translatedExpression;
+            var translatedExpression = mapper.Map<Expression<Func<TDto, bool>>, Expression<Func<TEntity, bool>>>(queryOptions.GetFilter());
+
+            if (translatedExpression != null)
+            {
+                query = query.Where(translatedExpression);
+            }
+            if (queryOptions.Top != null)
+            {
+                query = query.Take(queryOptions.Top.Value);
+            }
+            if (queryOptions.Skip != null)
+            {
+                query = query.Skip(queryOptions.Skip.Value);
+            }
+            if (queryOptions.OrderBy != null)
+            {
+                //TODO check this later
+            }
+
+            return query;
         }
     }
 }

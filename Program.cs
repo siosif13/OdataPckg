@@ -8,6 +8,7 @@ using OdataPckg.DAL;
 using OdataPckg.DTO;
 using OdataPckg.Mapper;
 using OdataPckg.Services;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,26 @@ builder.Services.AddControllers().AddOData(options =>
 IEdmModel GetEdmModel()
 {
     var odataBuilder = new ODataConventionModelBuilder();
+
+https://learn.microsoft.com/en-us/odata/webapi/model-builder-untyped build edm model explicitly
+
+
+    //EdmEntityType customer = new EdmEntityType("WebApiDocNS", "Customer");
+    //customer.AddKeys(customer.AddStructuralProperty("CustomerId", EdmPrimitiveTypeKind.Int32));
+    //customer.AddStructuralProperty("Location", new EdmComplexTypeReference(address, isNullable: true));
+    //model.AddElement(customer);
+
+    //EdmEntityType order = new EdmEntityType("WebApiDocNS", "Order");
+    //order.AddKeys(order.AddStructuralProperty("OrderId", EdmPrimitiveTypeKind.Int32));
+    //order.AddStructuralProperty("Token", EdmPrimitiveTypeKind.Guid);
+    //model.AddElement(order);
+
+    //EdmEntityType blog = new EdmEntityType("dto", "Blog");
+    //blog.AddKeys(blog.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32));
+    //blog.AddStructuralProperty("Url", EdmPrimitiveTypeKind.String);
+    //blog.AddStructuralProperty("Posts", new EdmComplexTypeReference(IEnumerable, false));
+    //blog.AddStructuralProperty("Posts", EdmPrimitiveTypeKind.Lis)
+
 
     odataBuilder.EntitySet<BlogDto>("Blogs");
 
