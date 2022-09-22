@@ -7,6 +7,7 @@ using OdataPckg.Services;
 
 namespace OdataPckg.Controllers
 {
+    [Route("Blogs")]
     public class BlogsController : ODataController
     {
         private readonly IBlogService blogService;
@@ -16,8 +17,8 @@ namespace OdataPckg.Controllers
             this.blogService = blogService;
         }
 
-        //[HttpGet]
-        public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
+        [HttpGet]
+        public ActionResult<IQueryable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
             queryOptions.Validate(new ODataValidationSettings());
 
@@ -26,22 +27,19 @@ namespace OdataPckg.Controllers
             return Ok(items);
         }
 
-        //[HttpGet]
-        public ActionResult<BlogDto> Get(int key)
+        [HttpGet("{id}")]
+        [EnableQuery]
+        public ActionResult<BlogDto> Get(int id, ODataQueryOptions<BlogDto> queryOptions)
         {
-            // renaming key to id seems to break the method
-
-            var item = blogService.GetById(key);
-            // the problem of including Posts persists here, because we have no query options to apply, Posts are removed somehow by the OData pipeline
+            var item = blogService.GetById(id);
 
             return Ok(item);
         }
 
-
-        //[HttpGet]     --> routing verbs are ignored here and routing is made by convention
-        public ActionResult<BlogDto> Post([FromBody] BlogDto blogDto)
+        [HttpPost]
+        [EnableQuery]
+        public ActionResult<BlogDto> Create([FromBody] BlogDto blogDto)
         {
-            // if i rename Post to Create, i'll get a 405 method not allowed
             // [Required] property on dto is not automatically validated. Do I have to explicitly call modelstate.IsValid?
             if (!ModelState.IsValid)
             {
@@ -51,19 +49,21 @@ namespace OdataPckg.Controllers
             return Ok(blogService.Create(blogDto));
         }
 
-        public ActionResult<BlogDto> Put(int key, [FromBody] BlogDto item)
+        [HttpPut("{id}")]
+        public ActionResult<BlogDto> Put(int id, [FromBody] BlogDto item)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            return Ok(blogService.Update(key, item));
+            return Ok(blogService.Update(id, item));
         }
 
-        public ActionResult Delete(int key)
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
         {
-            blogService.Delete(key);
+            blogService.Delete(id);
             return Ok();
         }
     }

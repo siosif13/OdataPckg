@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OdataPckg.DTO
 {
-    [AutoExpand]
     public class PostDto
     {
         public int Id { get; set; }

@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-using Microsoft.AspNetCore.OData.Formatter.MediaType;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using OdataPckg.DAL;
@@ -32,14 +29,13 @@ namespace OdataPckg.Services
         public IEnumerable<BlogDto> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
             // default includes
-            var initialQ =  blogs.Include(p => p.Posts);
+            var initialQ = blogs.Include(p => p.Posts);
 
             var query = TranslateQuery(initialQ, queryOptions);
 
-            var items = mapper.Map<IEnumerable<BlogDto>>(query.ToList());
+            var items = mapper.Map<IEnumerable<BlogDto>>(query.ToList()).AsQueryable();
 
-            // reapplying the query options seems to solve my problem of empty list
-            queryOptions.ApplyTo(items.AsQueryable());
+            queryOptions.ApplyTo(items);
 
             return items;
         }
