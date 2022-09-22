@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using OdataPckg.DTO;
 using OdataPckg.Services;
 
 namespace OdataPckg.Controllers
 {
-    //    [ApiController]           /*--> not activating it removes esential api verifications, activating it duplicates endpoints and conflicts with odata*/
-    //    [Route("[controller]")]
-    //[ODataRouteComponent("Blogs")]
     public class BlogsController : ODataController
     {
         private readonly IBlogService blogService;
@@ -19,10 +17,10 @@ namespace OdataPckg.Controllers
         }
 
         [HttpGet]
-        //[EnableQuery]
         public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
-            // should we validate query options??
+            queryOptions.Validate(new ODataValidationSettings());
+
             var items = blogService.Get(queryOptions);
 
             return Ok(items);

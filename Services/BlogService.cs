@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Extensions.ExpressionMapping;
-using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using OdataPckg.DAL;
@@ -8,7 +6,6 @@ using OdataPckg.DAL.Entities;
 using OdataPckg.DTO;
 using OdataPckg.Extensions;
 using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace OdataPckg.Services
 {
@@ -28,33 +25,15 @@ namespace OdataPckg.Services
         public IEnumerable<BlogDto> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
             var initialQ = context.Set<Blog>().Include(p => p.Posts);
-            // Take & Skip are not called in the database
 
             var query = TranslateQuery(initialQ, queryOptions);
 
             var items = mapper.Map<IEnumerable<BlogDto>>(query.ToList());
-            //queryOptions.ApplyTo(items);
+
+            // reapplying the query options seems to solve my problem of empty list
+            queryOptions.ApplyTo(items.AsQueryable());
 
             return items;
-        }
-
-
-        public IEnumerable<BlogDto> GetTakeSkip(ODataQueryOptions<BlogDto> queryOptions)
-        {
-            //var expression = TranslateExpression<BlogDto, Blog>(queryOptions);
-
-            //var items = blogs.Where(expression).ToList();
-
-            //var items = blogs.ToList().AsQueryable();
-
-
-            //return mapper.Map<IEnumerable<BlogDto>>(filteredItems.ToList());
-
-            var items = mapper.Map<IEnumerable<BlogDto>>(blogs.ToList()).AsQueryable();
-
-            var filteredItems = queryOptions.ApplyTo(items) as IQueryable<BlogDto>;
-
-            return filteredItems.ToList();
         }
 
 
