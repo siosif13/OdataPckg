@@ -16,7 +16,7 @@ namespace OdataPckg.Controllers
             this.blogService = blogService;
         }
 
-        [HttpGet]
+        //[HttpGet]
         public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
         {
             queryOptions.Validate(new ODataValidationSettings());
@@ -27,27 +27,44 @@ namespace OdataPckg.Controllers
         }
 
         //[HttpGet]
-        ////[EnableQuery]
-        //public ActionResult<IEnumerable<BlogDto>> Get(ODataQueryOptions<BlogDto> queryOptions)
-        //{
-        //    // should we validate query options??
-        //    var items = blogService.GetTakeSkip(queryOptions);
+        public ActionResult<BlogDto> Get(int key)
+        {
+            // renaming key to id seems to break the method
 
-        //    return Ok(items);
-        //}
+            var item = blogService.GetById(key);
+            // the problem of including Posts persists here, because we have no query options to apply, Posts are removed somehow by the OData pipeline
 
-        //[HttpGet("{id}")]
-        ////[NonAction]
-        //public ActionResult<BlogDto> GetById(int id)
-        //{
-        //    var blog = blogService.GetById(id);
-        //    return Ok(blog);
-        //}
+            return Ok(item);
+        }
 
-        //[HttpPatch]
-        //public ActionResult Patch(Delta<BlogDto> delta)
-        //{
-        //    return Ok();
-        //}
+
+        //[HttpGet]     --> routing verbs are ignored here and routing is made by convention
+        public ActionResult<BlogDto> Post([FromBody] BlogDto blogDto)
+        {
+            // if i rename Post to Create, i'll get a 405 method not allowed
+            // [Required] property on dto is not automatically validated. Do I have to explicitly call modelstate.IsValid?
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(blogService.Create(blogDto));
+        }
+
+        public ActionResult<BlogDto> Put(int key, [FromBody] BlogDto item)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(blogService.Update(key, item));
+        }
+
+        public ActionResult Delete(int key)
+        {
+            blogService.Delete(key);
+            return Ok();
+        }
     }
 }

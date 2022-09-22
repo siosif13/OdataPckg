@@ -9,6 +9,7 @@ namespace OdataPckg.Mapper
         public MapperProfile()
         {
             CreateMap<Blog, BlogDto>().ReverseMap();
+
             CreateMap<Post, PostDto>().ReverseMap();
         }
     }
